@@ -54,7 +54,7 @@ class BehaviorCageAdmin(admin.ModelAdmin):
 
 class MouseAdmin(admin.ModelAdmin):
     search_fields = ['name']
-    list_display = ('name', 'training_name', 'age', 'sacked', 'sex', 'dob', 'cage', 
+    list_display = ('name', 'training_name', 'age', 'sacked', 'sackDate', 'sex', 'dob', 'cage', 
         'genotype', 'role', 'litter', 'status')
     list_editable = ('sacked', )
     readonly_fields = ('info', 'age',)

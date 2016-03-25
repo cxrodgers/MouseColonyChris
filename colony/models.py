@@ -111,6 +111,7 @@ class Mouse(models.Model):
     tmx = models.CharField(max_length=50, blank=True, null=True)
     litter = models.ForeignKey('Litter', null=True, blank=True)
     sacked = models.BooleanField(default=False)
+    sackDate = models.DateField('sac date', blank=True, null=True)
     headplate_color = models.CharField(max_length=15, blank=True, null=True)
 
     status = models.CharField(max_length=50, null=True, blank=True)
