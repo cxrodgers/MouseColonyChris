@@ -61,4 +61,10 @@ target/
 #Ipython Notebook
 .ipynb_checkpoints
 
+# Do not store data on github
 db.sqlite3
+mouse/static/
+colony/migrations/
+
+# Protect settings for security
+mouse/settings.py
