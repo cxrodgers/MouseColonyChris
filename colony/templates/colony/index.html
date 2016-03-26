@@ -1,0 +1,56 @@
+{% if object_list %}
+    {% for cage in object_list %}
+        <h2>{{ cage.name }} {% if cage.defunct %} (defunct) {% endif %}</h2>
+        
+        {% if cage.purpose %}
+            Purpose: {{cage.purpose}}<br />
+        {% endif %}
+        
+        Target genotype: {{cage.target_genotype}}<br />
+
+        {% if cage.father %}
+            Father: {{cage.father.info}}<br />
+        {% endif %}
+
+        {% if cage.mother %}
+            Mother: {{cage.mother.info}}<br />
+        {% endif %}
+
+        {% if cage.mother2 %}
+            Mother2: {{cage.mother2.info}}<br />
+        {% endif %}
+
+        <br />
+        {% if cage.status %}
+            <strong>Status: {{cage.status}}</strong><br />
+        {% endif %}
+
+        <br />
+        Mouse list:<br />
+
+        {% if cage.mouse_set.all %}
+            <ul>
+            {% for mouse in cage.mouse_set.all %}
+                <li>{{ mouse.info }}</li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            Cage is empty.
+        {% endif %}
+        
+        <br />
+        Litter list:<br />        
+        
+        {% if cage.litter_set.all %}
+            <ul>
+            {% for litter in cage.litter_set.all %}
+                <li>{{ litter.name }} -- {{ litter.dob }} -- <strong>{{ litter.status }}</strong></li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+        
+    {% endfor %}
+
+{% else %}
+    <p>No cages are available.</p>
+{% endif %}
