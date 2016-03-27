@@ -30,7 +30,7 @@ class Task(models.Model):
     
 class Cage(models.Model):
     name = models.CharField(max_length=10, unique=True)    
-    status = models.CharField(max_length=100, blank=True, null=True)
+    notes = models.CharField(max_length=100, blank=True, null=True)
     defunct = models.BooleanField(default=False)
     
     # Needs to be made mandatory
@@ -50,6 +50,7 @@ class Cage(models.Model):
         return '<pre>' + '<br>'.join(info_l) + '</pre>'
     
     infos.allow_tags = True
+    infos.short_description = "Mouse Info"
 
     def age(self):
         age = None

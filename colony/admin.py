@@ -35,12 +35,18 @@ class LitterAdmin(admin.ModelAdmin):
             annotate(dwe_is_null=Count('date_weaned')).\
             order_by('dob_is_null', 'dwe_is_null', '-dob')
 
+class CageAdmin(admin.ModelAdmin):
+    list_display = ('name', 'infos', 'defunct', 'notes',)
+    list_editable = ('notes',)
+    ordering = ('defunct', 'name')
+    readonly_fields = ('infos',)
+    inlines = [MouseInline]
 
 class BreedingCageAdmin(admin.ModelAdmin):
     search_fields = ['name']
     list_display = ('name', 'infos', 'defunct',
-        'target_genotype', 'status', 'father', 'mother', 'litter_needs')
-    list_editable = ('defunct', 'status')
+        'target_genotype', 'notes', 'father', 'mother', 'litter_needs')
+    list_editable = ('defunct', 'notes')
     #~ list_display_links = ('father', 'mother',)
     readonly_fields = ('n_mice', 'names', 'target_genotype', 'infos', 'litter_needs')
     ordering = ('defunct', 'name',)
@@ -66,5 +72,5 @@ admin.site.register(Mouse, MouseAdmin)
 admin.site.register(BreedingCage, BreedingCageAdmin)
 admin.site.register(Genotype, GenotypeAdmin)
 admin.site.register(Litter, LitterAdmin)
-admin.site.register(Cage)
+admin.site.register(Cage, CageAdmin)
 admin.site.register(Person, PersonAdmin)
