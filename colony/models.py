@@ -16,7 +16,10 @@ import datetime
 # Create your models here.
 
 class Person(models.Model):
-    name = models.CharField(max_length=15)    
+    name = models.CharField(max_length=15, unique=True)    
+    
+    def __str__(self):
+        return self.name
 
 class Task(models.Model):
     assigned_to = models.ForeignKey('Person', related_name='assigned_to')
@@ -26,12 +29,12 @@ class Task(models.Model):
     
     
 class Cage(models.Model):
-    name = models.CharField(max_length=10)    
+    name = models.CharField(max_length=10, unique=True)    
     status = models.CharField(max_length=100, blank=True, null=True)
     defunct = models.BooleanField(default=False)
     
     # Needs to be made mandatory
-    proprietor = models.ForeignKey('Person', blank=True, null=True)
+    proprietor = models.ForeignKey('Person')
 
     def n_mice(self):
         return len(self.mouse_set.all())
@@ -39,21 +42,13 @@ class Cage(models.Model):
     def names(self):
         name_l = []
         for m in self.mouse_set.all():
-            if m.training_name is not None and m.training_name != '':
-                name_l.append(m.training_name)
-            else:
-                name_l.append(m.name)
+            name_l.append(m.name)
         return ', '.join(name_l)
     
     def infos(self):
         info_l = [m.info() for m in self.mouse_set.all()]
         return '<pre>' + '<br>'.join(info_l) + '</pre>'
-        #~ for m in self.mouse_set.all():
-            #~ if m.training_name is not None and m.training_name != '':
-                #~ info_l.append(m.training_name)
-            #~ else:
-                #~ info_l.append(m.name)
-        #~ return ', '.join(info_l)        
+    
     infos.allow_tags = True
 
     def age(self):
@@ -106,9 +101,7 @@ class Genotype(models.Model):
 
 class Mouse(models.Model):
     name = models.CharField(max_length=15, unique=True)
-    training_name = models.CharField(max_length=10, blank=True, null=True)
     dob = models.DateField('date of birth', blank=True, null=True)
-    tmx = models.CharField(max_length=50, blank=True, null=True)
     litter = models.ForeignKey('Litter', null=True, blank=True)
     sack_date = models.DateField('sac date', blank=True, null=True)
     notes = models.CharField(max_length=100, null=True, blank=True)    
@@ -146,9 +139,6 @@ class Mouse(models.Model):
         """Returns TRAINING_NAME || NAME (SEX, AGE, GENOTYPE)
         
         """
-        if self.training_name is not None and self.training_name != '':
-            return self.training_name
-        
         age = self.age()
         if age is None:
             return "%s (%s %s)" % (
@@ -171,10 +161,7 @@ class Mouse(models.Model):
         return (today - self.dob).days
     
     def __str__(self):
-        if len(str(self.training_name)) > 0:
-            return str(self.name) + '/' + str(self.training_name)
-        else:
-            return str(self.name)
+        return str(self.name)
 
 class Litter(models.Model):
     name = models.CharField(max_length=20, unique=True)

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import (Mouse, Genotype, Litter, 
-    BreedingCage, Cage)
+    BreedingCage, Cage, Person)
 # Register your models here.
 from django.db.models import Count
 
@@ -59,8 +59,12 @@ class MouseAdmin(admin.ModelAdmin):
 class GenotypeAdmin(admin.ModelAdmin):
     ordering = ('name',)
 
+class PersonAdmin(admin.ModelAdmin):
+    ordering = ('name',)
+
 admin.site.register(Mouse, MouseAdmin)
 admin.site.register(BreedingCage, BreedingCageAdmin)
 admin.site.register(Genotype, GenotypeAdmin)
 admin.site.register(Litter, LitterAdmin)
 admin.site.register(Cage)
+admin.site.register(Person, PersonAdmin)
