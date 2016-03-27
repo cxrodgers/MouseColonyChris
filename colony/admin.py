@@ -36,10 +36,11 @@ class LitterAdmin(admin.ModelAdmin):
             order_by('dob_is_null', 'dwe_is_null', '-dob')
 
 class CageAdmin(admin.ModelAdmin):
-    list_display = ('name', 'infos', 'defunct', 'notes',)
-    list_editable = ('notes',)
-    ordering = ('defunct', 'name')
+    list_display = ('proprietor', 'name', 'infos', 'defunct', 'notes',)
+    list_editable = ('notes', 'defunct', )
+    ordering = ('defunct', 'proprietor', 'name',)
     readonly_fields = ('infos',)
+    list_filter = ('proprietor',)
     inlines = [MouseInline]
 
 class BreedingCageAdmin(admin.ModelAdmin):
