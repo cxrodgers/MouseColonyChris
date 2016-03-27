@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views import generic
 
-from .models import  Mouse, BaseCage, BreedingCage, BehaviorCage
+from .models import  Mouse, Cage, BreedingCage
 
 # Create your views here.
 

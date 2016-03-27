@@ -15,11 +15,23 @@ import datetime
 
 # Create your models here.
 
+class Person(models.Model):
+    name = models.CharField(max_length=15)    
+
+class Task(models.Model):
+    assigned_to = models.ForeignKey('Person', related_name='assigned_to')
+    created_by = models.ForeignKey('Person', related_name='created_by')
+    notes = models.CharField(max_length=150)
+    cages = models.ManyToManyField('Cage', blank=True)
     
-class BaseCage(models.Model):
+    
+class Cage(models.Model):
     name = models.CharField(max_length=10)    
     status = models.CharField(max_length=100, blank=True, null=True)
     defunct = models.BooleanField(default=False)
+    
+    # Needs to be made mandatory
+    proprietor = models.ForeignKey('Person', blank=True, null=True)
 
     def n_mice(self):
         return len(self.mouse_set.all())
@@ -56,16 +68,13 @@ class BaseCage(models.Model):
     def __str__(self):
         return self.name
 
-class BreedingCage(BaseCage):
+class BreedingCage(Cage):
     father = models.ForeignKey('Mouse',
         null=True, blank=True, related_name='bc_father',
         limit_choices_to={'sex': 0})
     mother = models.ForeignKey('Mouse',
         null=True, blank=True, related_name='bc_mother',
         limit_choices_to={'sex': 1})
-    mother2 = models.ForeignKey('Mouse',
-        null=True, blank=True, related_name='bc_mother2')
-    purpose = models.CharField(max_length=50, blank=True, null=True)
     
     def target_genotype(self):
         res = ''
@@ -90,46 +99,19 @@ class BreedingCage(BaseCage):
                 return ln
         return None
 
-class BehaviorCage(BaseCage):
-    location = models.IntegerField(
-        choices=(
-            (0, '1702'),
-            (1, 'lab'),
-            ),
-        default=0,
-        )
-
 class Genotype(models.Model):
     name = models.CharField(max_length=50, unique=True)
     def __str__(self):
         return self.name
 
 class Mouse(models.Model):
-    name = models.CharField(max_length=10, unique=True)
+    name = models.CharField(max_length=15, unique=True)
     training_name = models.CharField(max_length=10, blank=True, null=True)
     dob = models.DateField('date of birth', blank=True, null=True)
     tmx = models.CharField(max_length=50, blank=True, null=True)
     litter = models.ForeignKey('Litter', null=True, blank=True)
-    sacked = models.BooleanField(default=False)
-    sackDate = models.DateField('sac date', blank=True, null=True)
-    headplate_color = models.CharField(max_length=15, blank=True, null=True)
-
-    status = models.CharField(max_length=50, null=True, blank=True)
-
-    # Could imagine derived classes TrainingMouse and BreederMouse
-    # Mostly just so that TrainingMouse has a lot more task-specific info
-    # But it's possible that BreederMouse become TrainingMouse
-    # And there isn't any BreederMouse-specific info
-    role = models.IntegerField(
-        choices=(
-            (0, 'waiting'),
-            (1, 'training'),
-            (2, 'vacation'),
-            (3, 'breeder'),
-            ),
-        default=0,
-        )
-    
+    sack_date = models.DateField('sac date', blank=True, null=True)
+    notes = models.CharField(max_length=100, null=True, blank=True)    
     sex = models.IntegerField(
         choices=(
             (0, 'M'),
@@ -139,7 +121,7 @@ class Mouse(models.Model):
         )
     
     # Link it to a cage
-    cage = models.ForeignKey(BaseCage, null=True, blank=True)
+    cage = models.ForeignKey(Cage, null=True, blank=True)
     genotype = models.ForeignKey(Genotype)
     
     def auto_dob(self):
@@ -196,19 +178,16 @@ class Mouse(models.Model):
 
 class Litter(models.Model):
     name = models.CharField(max_length=20, unique=True)
-    dpm = models.DateField('parents mated', null=True, blank=True)
+    date_mated = models.DateField('parents mated', null=True, blank=True)
     dob = models.DateField('date of birth', null=True, blank=True)
-    dtc = models.DateField('toe clip', null=True, blank=True)
-    dwe = models.DateField('weaned', null=True, blank=True)
+    date_toeclipped = models.DateField('toe clip', null=True, blank=True)
+    date_weaned = models.DateField('weaned', null=True, blank=True)
     date_checked = models.DateField('last checked', null=True, blank=True)
     
     # This should really be called breeding_cage
-    cage = models.ForeignKey(BreedingCage, null=True)
+    breeding_cage = models.ForeignKey(BreedingCage, null=True)
     
-    # These should be determined from breeding_cage
-    #~ father = models.ForeignKey(Mouse, null=True, blank=True, related_name='litter_father')
-    #~ mother = models.ForeignKey(Mouse, null=True, blank=True, related_name='litter_mother')
-    status = models.CharField(max_length=50, null=True, blank=True)
+    notes = models.CharField(max_length=100, null=True, blank=True)
     pcr_info = models.CharField(max_length=50, null=True, blank=True)
     needs = models.CharField(max_length=50, null=True, blank=True)
     need_date = models.DateField('needs on', null=True, blank=True)
@@ -234,11 +213,11 @@ class Litter(models.Model):
         
         Sets the fields "needs" and "need_date".
         """
-        if self.dwe is not None:
+        if self.date_weaned is not None:
             # Already weaned
             self.needs = None
             self.need_date = None
-        elif self.dtc is not None:
+        elif self.date_toeclipped is not None:
             # Already toe clipped, needs wean
             if self.dob is None:
                 self.needs = "provide dob"
@@ -250,25 +229,19 @@ class Litter(models.Model):
             # Born, but not toe clipped
             self.need_date = self.dob + datetime.timedelta(days=7)
             self.needs = "toe clip on P7"
-        elif self.dpm is not None:
+        elif self.date_mated is not None:
             # Not born yet
-            self.need_date = self.dpm + datetime.timedelta(days=25)
+            self.need_date = self.date_mated + datetime.timedelta(days=25)
             
             # If it was checked since the target date, extend by 4 days
             if self.date_checked is not None and self.date_checked > self.need_date:
                 self.need_date = self.date_checked + datetime.timedelta(days=4)
             
             # Recalculate the time taken
-            gestation_period = (self.need_date - self.dpm).days
+            gestation_period = (self.need_date - self.date_mated).days
             self.needs = "check for pups on day %d" % gestation_period
         else:
             # Not even mated
             self.needs = "parent"
             self.need_date = datetime.date.today()
-    
-    
-
-class Desideratum(models.Model):
-    description = models.CharField(max_length=150, null=True, blank=True)
-    mice = models.ManyToManyField(Mouse, blank=True)
     
