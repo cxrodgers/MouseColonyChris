@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import (Mouse, Genotype, Litter, 
-    BreedingCage, Cage, Person)
+    BreedingCage, Cage, Person, Task)
 # Register your models here.
 from django.db.models import Count
 
@@ -69,9 +69,14 @@ class GenotypeAdmin(admin.ModelAdmin):
 class PersonAdmin(admin.ModelAdmin):
     ordering = ('name',)
 
+class TaskAdmin(admin.ModelAdmin):
+    list_display = ('assigned_to', 'created_by', 'notes', 'cages',)
+    list_editable = ('notes', 'cages',)
+
 admin.site.register(Mouse, MouseAdmin)
 admin.site.register(BreedingCage, BreedingCageAdmin)
 admin.site.register(Genotype, GenotypeAdmin)
 admin.site.register(Litter, LitterAdmin)
 admin.site.register(Cage, CageAdmin)
 admin.site.register(Person, PersonAdmin)
+admin.site.register(Task, TaskAdmin)
