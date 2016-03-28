@@ -31,7 +31,7 @@ class Task(models.Model):
         cage_l=[]
         for c in self.cages.all():
             cage_l.append(c.name)
-        return ','.join(cage_l)
+        return ', '.join(cage_l)
     
 class Cage(models.Model):
     name = models.CharField(max_length=10, unique=True)    
