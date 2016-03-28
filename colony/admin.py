@@ -61,6 +61,12 @@ class MouseAdmin(admin.ModelAdmin):
     readonly_fields = ('info', 'age',)
     #~ list_display_links = ('name', 'litter', 'cage')
     list_filter = ['genotype', 'sack_date']
+    fieldsets = (
+        (None, {
+            'fields': ('name', 'age', 'sack_date', 'sex', 'dob', 'cage', 'genotype', 'litter', 'notes', 'info'),
+            'description': "Placeholder for mouse admin change view instructions"
+        }),
+    )
     ordering = ['dob']
 
 class GenotypeAdmin(admin.ModelAdmin):
