@@ -76,8 +76,8 @@ class PersonAdmin(admin.ModelAdmin):
     ordering = ('name',)
 
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ('assigned_to', 'created_by', 'notes', 'cages',)
-    list_editable = ('notes', 'cages',)
+    list_display = ('assigned_to', 'created_by', 'notes', 'cage_names',)
+    list_editable = ('notes',)
 
 admin.site.register(Mouse, MouseAdmin)
 admin.site.register(BreedingCage, BreedingCageAdmin)

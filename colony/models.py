@@ -27,6 +27,8 @@ class Task(models.Model):
     notes = models.CharField(max_length=150)
     cages = models.ManyToManyField('Cage', blank=True)
     
+    def cage_names(self):
+        return ','.join(self.cages.all())
     
 class Cage(models.Model):
     name = models.CharField(max_length=10, unique=True)    
