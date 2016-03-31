@@ -34,6 +34,8 @@ class LitterAdmin(admin.ModelAdmin):
             annotate(dob_is_null=Count('dob')).\
             annotate(dwe_is_null=Count('date_weaned')).\
             order_by('dob_is_null', 'dwe_is_null', '-dob')
+            
+    ordering = ('proprietor', 'name',)
 
 class CageAdmin(admin.ModelAdmin):
     list_display = ('proprietor', 'name', 'infos', 'defunct', 'notes',)
