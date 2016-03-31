@@ -176,7 +176,6 @@ class Litter(models.Model):
     date_toeclipped = models.DateField('toe clip', null=True, blank=True)
     date_weaned = models.DateField('weaned', null=True, blank=True)
     date_checked = models.DateField('last checked', null=True, blank=True)
-    proprietor = models.ForeignKey(Person, null=True, blank=True)
     
     # This should really be called breeding_cage
     breeding_cage = models.ForeignKey(BreedingCage, null=True)
