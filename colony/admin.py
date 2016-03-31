@@ -8,7 +8,7 @@ from django.db.models import Count
 class MouseInline(admin.TabularInline):
     model = Mouse
     extra = 1
-    exclude = ('dob',)
+    #exclude = ('dob',)
     show_change_link = True    
 
 class LitterInline(admin.TabularInline):
