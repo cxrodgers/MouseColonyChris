@@ -239,4 +239,10 @@ class Litter(models.Model):
             # Not even mated
             self.needs = "parent"
             self.need_date = datetime.date.today()
+            
+    def save(self, *args, **kwargs):
+    if self.breeding_cage and not self.pk:
+        self.proprietor = self.breeding_cage.proprietor
+    return super(Litter, self).save(*args, **kwargs)
+
     
