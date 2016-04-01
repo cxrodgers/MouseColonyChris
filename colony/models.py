@@ -42,7 +42,8 @@ class Cage(models.Model):
             (0, '1710'),
             (1, '1702'),
             (2, 'Behavior'),
-            )
+            ),
+        default=0
         )
     
     # Needs to be made mandatory
