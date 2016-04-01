@@ -19,7 +19,7 @@ class LitterInline(admin.TabularInline):
 class LitterAdmin(admin.ModelAdmin):
     list_display = ('name', 'breeding_cage', 'date_mated', 'dob', 
         'date_toeclipped', 'date_weaned',
-        'date_checked', 'notes', '_needs', 'need_date')
+        'date_checked',  '_needs', 'need_date', 'notes',)
     inlines = [MouseInline] 
     list_editable = ('notes', 'date_weaned', 'date_checked')
     readonly_fields = ('_needs', 'need_date')
