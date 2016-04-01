@@ -37,6 +37,13 @@ class Cage(models.Model):
     name = models.CharField(max_length=10, unique=True)    
     notes = models.CharField(max_length=100, blank=True, null=True)
     defunct = models.BooleanField(default=False)
+    location = models.IntegerField(
+        choices = (
+            (0, '1710'),
+            (1, '1702'),
+            (2, 'Behavior'),
+            )
+        )
     
     # Needs to be made mandatory
     proprietor = models.ForeignKey('Person')
