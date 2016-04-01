@@ -170,9 +170,9 @@ class Mouse(models.Model):
         return str(self.name)
         
     def save(self, *args, **kwargs):
-    if self.litter and not self.pk:
-        self.dob = self.litter.dob
-    return super(Mouse, self).save(*args, **kwargs)
+        if self.litter and not self.pk:
+            self.dob = self.litter.dob
+        return super(Mouse, self).save(*args, **kwargs)
 
 class Litter(models.Model):
     name = models.CharField(max_length=20, unique=True)
