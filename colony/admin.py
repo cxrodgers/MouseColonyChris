@@ -17,7 +17,7 @@ class LitterInline(admin.TabularInline):
     show_change_link = True
 
 class LitterAdmin(admin.ModelAdmin):
-    list_display = ('name', 'breeding_cage', 'date_mated', 'dob', 
+    list_display = ('name', 'breeding_cage', 'date_mated', 'age', 
         'date_toeclipped', 'date_weaned',
         'date_checked',  '_needs', 'need_date', 'notes',)
     inlines = [MouseInline] 

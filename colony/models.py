@@ -198,6 +198,12 @@ class Litter(models.Model):
     pcr_info = models.CharField(max_length=50, null=True, blank=True)
     needs = models.CharField(max_length=50, null=True, blank=True)
     need_date = models.DateField('needs on', null=True, blank=True)
+    
+    def age(self):
+        if self.dob is None:
+            return None
+        today = datetime.date.today()
+        return (today - self.dob).days
 
     def __str__(self):
         return str(self.name)
