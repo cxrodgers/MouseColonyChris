@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import (Mouse, Genotype, Litter, 
-    BreedingCage, Cage, Person, Task)
+    Cage, Person, Task)
 # Register your models here.
 from django.db.models import Count
 
@@ -44,17 +44,7 @@ class CageAdmin(admin.ModelAdmin):
     ordering = ('defunct', 'proprietor', 'name',)
     readonly_fields = ('infos',)
     list_filter = ('proprietor',)
-    inlines = [MouseInline]
-
-class BreedingCageAdmin(admin.ModelAdmin):
-    search_fields = ['name']
-    list_display = ('name', 'infos', 'defunct',
-        'target_genotype', 'notes', 'father', 'mother', 'litter_needs')
-    list_editable = ('defunct', 'notes')
-    #~ list_display_links = ('father', 'mother',)
-    readonly_fields = ('n_mice', 'names', 'target_genotype', 'infos', 'litter_needs')
-    ordering = ('defunct', 'name',)
-    inlines = [MouseInline, LitterInline]
+    inlines = [LitterInline]
 
 class MouseAdmin(admin.ModelAdmin):
     search_fields = ['name']
@@ -83,7 +73,6 @@ class TaskAdmin(admin.ModelAdmin):
     list_editable = ('notes',)
 
 admin.site.register(Mouse, MouseAdmin)
-admin.site.register(BreedingCage, BreedingCageAdmin)
 admin.site.register(Genotype, GenotypeAdmin)
 admin.site.register(Litter, LitterAdmin)
 admin.site.register(Cage, CageAdmin)

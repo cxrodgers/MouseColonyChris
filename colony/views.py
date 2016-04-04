@@ -1,15 +1,15 @@
 from django.shortcuts import render
 from django.views import generic
 
-from .models import  Mouse, Cage, BreedingCage
+from .models import  Mouse, Cage
 
 # Create your views here.
 
 class IndexView(generic.ListView):
     template_name = 'colony/index.html'
-    model = BreedingCage
+    model = Cage
     def get_queryset(self):
-        return BreedingCage.objects.order_by('defunct').all()
+        return Cage.objects.order_by('defunct').all()
 
 #~ class MouseDetailView(generic.ListView):
     #~ model = Mouse

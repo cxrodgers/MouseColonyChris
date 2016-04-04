@@ -77,37 +77,6 @@ class Cage(models.Model):
     def __str__(self):
         return self.name
 
-class BreedingCage(Cage):
-    father = models.ForeignKey('Mouse',
-        null=True, blank=True, related_name='bc_father',
-        limit_choices_to={'sex': 0})
-    mother = models.ForeignKey('Mouse',
-        null=True, blank=True, related_name='bc_mother',
-        limit_choices_to={'sex': 1})
-    
-    def target_genotype(self):
-        res = ''
-        if self.father is not None and self.father.genotype is not None:
-            res += str(self.father.genotype)
-        else:
-            res += '?'
-        
-        res += ' x '
-        
-        if self.mother is not None and self.mother.genotype is not None:
-            res += str(self.mother.genotype)
-        else:
-            res += '?'
-        
-        return res
-    
-    def litter_needs(self):
-        for litter in self.litter_set.all():
-            ln = litter._needs()
-            if ln is not None:
-                return ln
-        return None
-
 class Genotype(models.Model):
     name = models.CharField(max_length=50, unique=True)
     def __str__(self):
@@ -196,6 +165,14 @@ class Litter(models.Model):
     pcr_info = models.CharField(max_length=50, null=True, blank=True)
     needs = models.CharField(max_length=50, null=True, blank=True)
     need_date = models.DateField('needs on', null=True, blank=True)
+
+
+    father = models.ForeignKey('Mouse',
+        null=True, blank=True, related_name='bc_father',
+        limit_choices_to={'sex': 0})
+    mother = models.ForeignKey('Mouse',
+        null=True, blank=True, related_name='bc_mother',
+        limit_choices_to={'sex': 1})
     
     # A one-to-one key to Cage, because each Cage can have no more than
     # one litter
