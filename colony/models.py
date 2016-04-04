@@ -190,14 +190,22 @@ class Litter(models.Model):
     date_weaned = models.DateField('weaned', null=True, blank=True)
     date_checked = models.DateField('last checked', null=True, blank=True)
     
-    # This should really be called breeding_cage
-    breeding_cage = models.ForeignKey(BreedingCage, null=True)
     proprietor = models.ForeignKey(Person, default=1)
     
     notes = models.CharField(max_length=100, null=True, blank=True)
     pcr_info = models.CharField(max_length=50, null=True, blank=True)
     needs = models.CharField(max_length=50, null=True, blank=True)
     need_date = models.DateField('needs on', null=True, blank=True)
+    
+    # A one-to-one key to Cage, because each Cage can have no more than
+    # one litter
+    # Not sure whether to set primary_key=True here
+    # If we set it true, it implie null=False and unique=True
+    # Probably this is good because it will auto-create a Litter for every
+    # new Cage, which may save a manual step?
+    breeding_cage = models.OneToOneField(Cage,
+        on_delete=models.CASCADE,
+        primary_key=True)
     
     def age(self):
         if self.dob is None:
