@@ -21,4 +21,5 @@ from django.contrib import admin
 urlpatterns = [
     url(r'^sandbox/colony/', include('colony.urls')),
     url(r'^sandbox/admin/', admin.site.urls),
+    url(r'^sandbox/nested_admin/', include('nested_admin.urls')),
 ]
