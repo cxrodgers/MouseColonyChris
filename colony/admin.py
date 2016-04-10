@@ -3,15 +3,15 @@ from .models import (Mouse, Genotype, Litter,
     Cage, Person, Task)
 # Register your models here.
 from django.db.models import Count
-import nested_admin
+import nested_inline.admin
 
-class MouseInline(nested_admin.NestedTabularInline):
+class MouseInline(nested_inline.admin.NestedTabularInline):
     model = Mouse
     extra = 1
     #exclude = ('dob',)
     show_change_link = True    
 
-class LitterInline(nested_admin.NestedStackedInline):
+class LitterInline(nested_inline.admin.NestedStackedInline):
     model = Litter
     extra = 1
     show_change_link = True
@@ -39,7 +39,7 @@ class LitterAdmin(admin.ModelAdmin):
             
     ordering = ('proprietor', 'name',)
 
-class CageAdmin(nested_admin.NestedModelAdmin):
+class CageAdmin(nested_inline.admin.NestedModelAdmin):
     list_display = ('proprietor', 'name', 'infos', 'defunct', 'notes',)
     list_editable = ('notes', 'defunct', )
     ordering = ('defunct', 'proprietor', 'name',)
