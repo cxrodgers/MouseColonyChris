@@ -40,7 +40,7 @@ class LitterAdmin(admin.ModelAdmin):
     ordering = ('proprietor',)
 
 class CageAdmin(nested_inline.admin.NestedModelAdmin):
-    list_display = ('proprietor', 'name', 'infos', 'defunct', 'notes',)
+    list_display = ('name', 'proprietor', 'infos', 'defunct', 'notes',)
     list_editable = ('notes', 'defunct', )
     ordering = ('defunct', 'proprietor', 'name',)
     readonly_fields = ('infos',)
