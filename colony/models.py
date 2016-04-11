@@ -84,8 +84,8 @@ class Genotype(models.Model):
 
 class Mouse(models.Model):
     name = models.CharField(max_length=15, unique=True)
-    manual_dob = models.DateField('date of birth', blank=True, null=True)
     litter = models.ForeignKey('Litter', null=True, blank=True)
+    
     sack_date = models.DateField('sac date', blank=True, null=True)
     notes = models.CharField(max_length=100, null=True, blank=True)    
     sex = models.IntegerField(
@@ -96,21 +96,19 @@ class Mouse(models.Model):
             )
         )
     
+    # These fields are normally calculated from Litter but can be overridden
+    manual_dob = models.DateField('DOB override', blank=True, null=True)
+    manual_father = models.ForeignKey('Mouse', null=True, blank=True, related_name='mmf')
+    manual_mother = models.ForeignKey('Mouse', null=True, blank=True, related_name='mmm')
+    
     # Link it to a cage
     cage = models.ForeignKey(Cage, null=True, blank=True)
     genotype = models.ForeignKey(Genotype)
     
     @property
     def dob(self):
-        """Auto dob
+        """Property that returns the DOB of the litter, or manual override.
         
-        Idea is that most of the time the dob doesn't have to specified bc
-        we get it from the litter. So remove it from the inline.
-        
-        However in some cases we don't have litter, so allow user to specify
-        manually in those cases.
-        
-        Then this is a read-only field to present the correct dob.
         """
         if self.manual_dob is not None:
             return self.manual_dob
@@ -119,6 +117,30 @@ class Mouse(models.Model):
         else:
             return None
     
+    @property
+    def mother(self):
+        """Property that returns the mother of the litter, or manual override.
+        
+        """
+        if self.manual_mother is not None:
+            return self.manual_mother
+        elif self.litter is not None:
+            return self.litter.mother
+        else:
+            return None    
+
+    @property
+    def father(self):
+        """Property that returns the father of the litter, or manual override.
+        
+        """
+        if self.manual_father is not None:
+            return self.manual_father
+        elif self.litter is not None:
+            return self.litter.father
+        else:
+            return None    
+        
     def info(self):
         """Returns TRAINING_NAME || NAME (SEX, AGE, GENOTYPE)
         
@@ -146,13 +168,15 @@ class Mouse(models.Model):
     
     def __str__(self):
         return str(self.name)
-        
-    def save(self, *args, **kwargs):
-        # Looks like this makes sure that new mice are saved with the
-        # litter's DOB?
-        if self.litter and not self.pk:
-            self.manual_dob = self.litter.dob
-        return super(Mouse, self).save(*args, **kwargs)
+    
+    # This is no longer necessary because the manual_dob field is used
+    # to contain this information. In fact we *don't* want to autosave
+    # the DOB in this way, because if the litter DOB is changed later, then
+    # we want the mouse DOB to automatically update.
+    #~ def save(self, *args, **kwargs):
+        #~ if self.litter and not self.pk:
+            #~ self.manual_dob = self.litter.dob
+        #~ return super(Mouse, self).save(*args, **kwargs)
 
 class Litter(models.Model):
     date_mated = models.DateField('parents mated', null=True, blank=True)

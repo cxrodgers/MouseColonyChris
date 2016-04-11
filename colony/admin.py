@@ -8,7 +8,7 @@ import nested_inline.admin
 class MouseInline(nested_inline.admin.NestedTabularInline):
     model = Mouse
     extra = 1
-    exclude = ('manual_dob',)
+    exclude = ('manual_dob', 'manual_mother', 'manual_father')
     show_change_link = True    
     
     # How can we make "notes" the right-most field?
@@ -42,7 +42,7 @@ class LitterAdmin(admin.ModelAdmin):
     ordering = ('proprietor',)
 
 class CageAdmin(nested_inline.admin.NestedModelAdmin):
-    list_display = ('name', 'proprietor', 'infos', 'defunct', 'notes',)
+    list_display = ('name', 'proprietor', 'litter', 'infos', 'defunct', 'notes',)
     list_editable = ('notes', 'defunct', )
     ordering = ('defunct', 'proprietor', 'name',)
     readonly_fields = ('infos',)
@@ -51,16 +51,23 @@ class CageAdmin(nested_inline.admin.NestedModelAdmin):
 
 class MouseAdmin(admin.ModelAdmin):
     #search_fields = ['name']
-    list_display = ('name', 'age', 'sack_date', 'sex', 'cage', 
+    
+    # This controls the columns that show up on the Admin page for Mouse
+    list_display = ('name', 'dob', 'age', 'sack_date', 'sex', 'cage', 
         'genotype', 'litter', 'notes')
     list_editable = ('sack_date', )
-    readonly_fields = ('info', 'age',)
+    readonly_fields = ('info', 'age', 'dob', 'mother', 'father')
     #~ list_display_links = ('name', 'litter', 'cage')
     list_filter = ['genotype', 'sack_date']
+    
+    # This controls what you see on the individual mouse page
+    # Would be better to break this up into sections
     fieldsets = (
         (None, {
-            'fields': ('name', 'age', 'sack_date', 'sex', 'cage', 'genotype', 'litter', 'notes', 'info'),
-            'description': "Placeholder for mouse admin change view instructions"
+            'fields': ('name', 'dob', 'father', 'mother', 
+            'manual_dob', 'manual_father', 'manual_mother',
+            'age', 'sack_date', 'sex', 'cage', 'genotype', 'litter', 'notes', 'info'),
+            'description': 'Specify manual_dob, manual_father, and manual_mother only if not available in litter info',
         }),
     )
     #ordering = ['dob']
