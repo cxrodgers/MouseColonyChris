@@ -152,7 +152,6 @@ class Mouse(models.Model):
         return super(Mouse, self).save(*args, **kwargs)
 
 class Litter(models.Model):
-    name = models.CharField(max_length=20, unique=True)
     date_mated = models.DateField('parents mated', null=True, blank=True)
     dob = models.DateField('date of birth', null=True, blank=True)
     date_toeclipped = models.DateField('toe clip', null=True, blank=True)
@@ -191,7 +190,7 @@ class Litter(models.Model):
         return (today - self.dob).days
 
     def __str__(self):
-        return str(self.name)
+        return str(self.breeding_cage.name)
     
     def _needs(self):
         """View column in admin that triggers update_needs
