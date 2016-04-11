@@ -8,8 +8,10 @@ import nested_inline.admin
 class MouseInline(nested_inline.admin.NestedTabularInline):
     model = Mouse
     extra = 1
-    #exclude = ('dob',)
+    exclude = ('manual_dob',)
     show_change_link = True    
+    
+    # How can we make "notes" the right-most field?
 
 class LitterInline(nested_inline.admin.NestedStackedInline):
     model = Litter
