@@ -148,8 +148,10 @@ class Mouse(models.Model):
         return str(self.name)
         
     def save(self, *args, **kwargs):
+        # Looks like this makes sure that new mice are saved with the
+        # litter's DOB?
         if self.litter and not self.pk:
-            self.dob = self.litter.dob
+            self.manual_dob = self.litter.dob
         return super(Mouse, self).save(*args, **kwargs)
 
 class Litter(models.Model):
