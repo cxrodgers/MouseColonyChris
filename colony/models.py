@@ -195,9 +195,6 @@ class Litter(models.Model):
     def __str__(self):
         return str(self.breeding_cage.name)
     
-    @property
-    def name(self):
-        return self.breeding_cage.name
     
     def _needs(self):
         """View column in admin that triggers update_needs
