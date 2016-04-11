@@ -13,7 +13,7 @@ class MouseInline(nested_inline.admin.NestedTabularInline):
 
 class LitterInline(nested_inline.admin.NestedStackedInline):
     model = Litter
-    extra = 1
+    extra = 0
     show_change_link = True
     inlines = [MouseInline]
 
