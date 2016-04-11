@@ -84,7 +84,7 @@ class Genotype(models.Model):
 
 class Mouse(models.Model):
     name = models.CharField(max_length=15, unique=True)
-    dob = models.DateField('date of birth', blank=True, null=True)
+    manual_dob = models.DateField('date of birth', blank=True, null=True)
     litter = models.ForeignKey('Litter', null=True, blank=True)
     sack_date = models.DateField('sac date', blank=True, null=True)
     notes = models.CharField(max_length=100, null=True, blank=True)    
@@ -100,7 +100,8 @@ class Mouse(models.Model):
     cage = models.ForeignKey(Cage, null=True, blank=True)
     genotype = models.ForeignKey(Genotype)
     
-    def auto_dob(self):
+    @property
+    def dob(self):
         """Auto dob
         
         Idea is that most of the time the dob doesn't have to specified bc
@@ -191,6 +192,10 @@ class Litter(models.Model):
 
     def __str__(self):
         return str(self.breeding_cage.name)
+    
+    @property
+    def name(self):
+        return self.breeding_cage.name
     
     def _needs(self):
         """View column in admin that triggers update_needs

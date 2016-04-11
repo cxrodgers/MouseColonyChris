@@ -18,7 +18,7 @@ class LitterInline(nested_inline.admin.NestedStackedInline):
     inlines = [MouseInline]
 
 class LitterAdmin(admin.ModelAdmin):
-    list_display = ('name', 'breeding_cage', 'date_mated', 'age', 
+    list_display = ('breeding_cage', 'date_mated', 'age', 
         'date_toeclipped', 'date_weaned',
         'date_checked',  '_needs', 'need_date', 'notes',)
     inlines = [MouseInline] 
@@ -37,7 +37,7 @@ class LitterAdmin(admin.ModelAdmin):
             annotate(dwe_is_null=Count('date_weaned')).\
             order_by('dob_is_null', 'dwe_is_null', '-dob')
             
-    ordering = ('proprietor', 'name',)
+    ordering = ('proprietor',)
 
 class CageAdmin(nested_inline.admin.NestedModelAdmin):
     list_display = ('proprietor', 'name', 'infos', 'defunct', 'notes',)
@@ -48,8 +48,8 @@ class CageAdmin(nested_inline.admin.NestedModelAdmin):
     inlines = [LitterInline]
 
 class MouseAdmin(admin.ModelAdmin):
-    search_fields = ['name']
-    list_display = ('name', 'age', 'sack_date', 'sex', 'dob', 'cage', 
+    #search_fields = ['name']
+    list_display = ('name', 'age', 'sack_date', 'sex', 'cage', 
         'genotype', 'litter', 'notes')
     list_editable = ('sack_date', )
     readonly_fields = ('info', 'age',)
@@ -57,11 +57,11 @@ class MouseAdmin(admin.ModelAdmin):
     list_filter = ['genotype', 'sack_date']
     fieldsets = (
         (None, {
-            'fields': ('name', 'age', 'sack_date', 'sex', 'dob', 'cage', 'genotype', 'litter', 'notes', 'info'),
+            'fields': ('name', 'age', 'sack_date', 'sex', 'cage', 'genotype', 'litter', 'notes', 'info'),
             'description': "Placeholder for mouse admin change view instructions"
         }),
     )
-    ordering = ['dob']
+    #ordering = ['dob']
 
 class GenotypeAdmin(admin.ModelAdmin):
     ordering = ('name',)
