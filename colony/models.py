@@ -60,7 +60,8 @@ class Cage(models.Model):
     
     def infos(self):
         info_l = [m.info() for m in self.mouse_set.all()]
-        return '<pre>' + '<br>'.join(info_l) + '</pre>'
+        pups_l = ['pup ' + m.info() for m in self.litter.mouse_set.all()]
+        return '<pre>' + '<br>'.join(info_l + pups_l) + '</pre>'
     
     infos.allow_tags = True
     infos.short_description = "Mouse Info"
@@ -217,7 +218,13 @@ class Litter(models.Model):
         return (today - self.dob).days
 
     def __str__(self):
-        return str(self.breeding_cage.name)
+        bc_name = self.breeding_cage.name
+        n_pups = len(self.mouse_set.all())
+        pup_age = self.age()
+        if pup_age is None:
+            return '%s: %d pups' % (bc_name, n_pups)
+        else:
+            return '%s: %d@P%s' % (bc_name, n_pups, pup_age)
     
     
     def _needs(self):
