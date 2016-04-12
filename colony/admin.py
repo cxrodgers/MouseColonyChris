@@ -22,11 +22,11 @@ class LitterInline(nested_inline.admin.NestedStackedInline):
 class LitterAdmin(admin.ModelAdmin):
     list_display = ('breeding_cage', 'date_mated', 'age', 
         'date_toeclipped', 'date_weaned',
-        'date_checked',  '_needs', 'need_date', 'notes',)
+        'date_checked',  'needs', 'need_date', 'notes',)
     inlines = [MouseInline] 
     list_editable = ('notes', 'date_weaned', 'date_checked')
     list_filter = ('proprietor',)
-    readonly_fields = ('_needs', 'need_date')
+    readonly_fields = ('needs', 'need_date')
 
     def get_queryset(self, request):
         """Override the ordering to put future litters at the top"""
@@ -43,14 +43,14 @@ class LitterAdmin(admin.ModelAdmin):
     ordering = ('proprietor',)
 
 class CageAdmin(nested_inline.admin.NestedModelAdmin):
-    list_display = ('name', 'proprietor', 'litter', 'infos', 'defunct', 'notes',)
+    list_display = ('name', 'proprietor', 'litter', 'infos', 'needs', 'need_date', 'defunct', 'notes',)
     list_editable = ('notes', 'defunct', )
     
     # This list_filter doesn't seem to be working at all
     list_filter = ('proprietor__name')
     
     ordering = ('defunct', 'proprietor', 'name',)
-    readonly_fields = ('infos',)
+    readonly_fields = ('infos', 'needs', 'need_date',)
     list_filter = ('proprietor',)
     inlines = [LitterInline]
 

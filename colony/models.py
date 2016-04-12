@@ -77,6 +77,12 @@ class Cage(models.Model):
     
     def __str__(self):
         return self.name
+    
+    def needs(self):
+        return self.litter.needs
+    
+    def need_date(self):
+        return self.litter.need_date
 
 class Genotype(models.Model):
     name = models.CharField(max_length=50, unique=True)
@@ -190,9 +196,10 @@ class Litter(models.Model):
     
     notes = models.CharField(max_length=100, null=True, blank=True)
     pcr_info = models.CharField(max_length=50, null=True, blank=True)
-    needs = models.CharField(max_length=50, null=True, blank=True)
-    need_date = models.DateField('needs on', null=True, blank=True)
 
+    # These will be set upon request for properties needs and need_date
+    cached_needs = None
+    cached_need_date = None
 
     father = models.ForeignKey('Mouse',
         null=True, blank=True, related_name='bc_father',
@@ -236,56 +243,54 @@ class Litter(models.Model):
         else:
             return '%s: %d@P%s' % (bc_name, n_pups, pup_age)
     
-    
-    def _needs(self):
-        """View column in admin that triggers update_needs
-        
-        When the admin requests this, it calls update_needs, which sets
-        needs and need_date. This returns needs.
-        
-        Seems like there is a slight race condition in that need_date might
-        be requested before needs, which means it would be stale. But
-        refreshing would fix this..
-        """
+    @property
+    def needs(self):
+        """Next thing that is needed by this litter"""
         self.update_needs()
-        return self.needs
-        
+        return self.cached_needs
+    
+    @property
+    def need_date(self):
+        """Date of next thing this litter needs"""
+        self.update_needs()
+        return self.cached_need_date
+
     def update_needs(self):
         """Automatically determine next needed action and date.
         
-        Sets the fields "needs" and "need_date".
+        Sets the fields "cached_needs" and "cached_need_date".
         """
         if self.date_weaned is not None:
             # Already weaned
-            self.needs = None
-            self.need_date = None
+            self.cached_needs = None
+            self.cached_need_date = None
         elif self.date_toeclipped is not None:
             # Already toe clipped, needs wean
             if self.dob is None:
-                self.needs = "provide dob"
-                self.need_date = datetime.date.today()
+                self.cached_needs = "provide dob"
+                self.cached_need_date = datetime.date.today()
                 return
-            self.need_date = self.dob + datetime.timedelta(days=19)
-            self.needs = "wean on P19"
+            self.cached_need_date = self.dob + datetime.timedelta(days=19)
+            self.cached_needs = "wean"
         elif self.dob is not None:
             # Born, but not toe clipped
-            self.need_date = self.dob + datetime.timedelta(days=7)
-            self.needs = "toe clip on P7"
+            self.cached_need_date = self.dob + datetime.timedelta(days=7)
+            self.cached_needs = "toe clip"
         elif self.date_mated is not None:
             # Not born yet
-            self.need_date = self.date_mated + datetime.timedelta(days=25)
+            self.cached_need_date = self.date_mated + datetime.timedelta(days=25)
             
             # If it was checked since the target date, extend by 4 days
-            if self.date_checked is not None and self.date_checked > self.need_date:
-                self.need_date = self.date_checked + datetime.timedelta(days=4)
+            if self.date_checked is not None and self.date_checked > self.cached_need_date:
+                self.cached_need_date = self.date_checked + datetime.timedelta(days=4)
             
             # Recalculate the time taken
-            gestation_period = (self.need_date - self.date_mated).days
-            self.needs = "check for pups on day %d" % gestation_period
+            gestation_period = (self.cached_need_date - self.date_mated).days
+            self.cached_needs = "pup check day %d" % gestation_period
         else:
             # Not even mated
-            self.needs = "parent"
-            self.need_date = datetime.date.today()
+            self.cached_needs = None
+            self.cached_need_date = datetime.date.today()
             
     def save(self, *args, **kwargs):
         if self.breeding_cage and not self.pk:
