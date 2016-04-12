@@ -211,6 +211,12 @@ class Litter(models.Model):
         on_delete=models.CASCADE,
         primary_key=True)
     
+    def days_since_mating(self):
+        if self.date_mated is None:
+            return None
+        today = datetime.date.today()
+        return (today - self.date_mated).days
+    
     def age(self):
         if self.dob is None:
             return None
@@ -221,8 +227,12 @@ class Litter(models.Model):
         bc_name = self.breeding_cage.name
         n_pups = len(self.mouse_set.all())
         pup_age = self.age()
+        pup_embryonic_age = self.days_since_mating()
         if pup_age is None:
-            return '%s: %d pups' % (bc_name, n_pups)
+            if pup_embryonic_age is None:
+                return '%s: %d pups' % (bc_name, n_pups)
+            else:
+                return '%s: E%s' % (bc_name, pup_embryonic_age)
         else:
             return '%s: %d@P%s' % (bc_name, n_pups, pup_age)
     
