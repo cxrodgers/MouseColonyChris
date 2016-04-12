@@ -29,7 +29,7 @@ class LitterAdmin(admin.ModelAdmin):
         'date_toeclipped', 'date_weaned',
         'date_checked',  'needs', 'need_date', 'notes',)
     inlines = [MouseInline] 
-    list_editable = ('notes', 'date_weaned', 'date_checked')
+    list_editable = ('notes', 'date_checked')
     list_filter = ('proprietor',)
     readonly_fields = ('needs', 'need_date')
 
