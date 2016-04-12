@@ -53,16 +53,25 @@ class Cage(models.Model):
         return len(self.mouse_set.all())
     
     def names(self):
+        """Return list of all mice in this cage"""
         name_l = []
         for m in self.mouse_set.all():
             name_l.append(m.name)
         return ', '.join(name_l)
     
     def infos(self):
-        info_l = [m.info() for m in self.mouse_set.all()]
-        pups_l = ['pup ' + m.info() for m in self.litter.mouse_set.all()]
-        return '<pre>' + '<br>'.join(info_l + pups_l) + '</pre>'
+        """Return list of all mice in this cage with additional info on each"""
+        # Get info from each contained mouse and prepend "pup" to pups
+        info_l = []
+        for mouse in self.mouse_set.order_by('name').all():
+            m_info = mouse.info()
+            if mouse.still_in_breeding_cage:
+                m_info = 'pup ' + m_info
+            info_l.append(m_info)
+        
+        return '<pre>' + '<br>'.join(info_l) + '</pre>'
     
+    # I think this is to allow a user-readable column name in admin
     infos.allow_tags = True
     infos.short_description = "Mouse Info"
 
@@ -173,6 +182,14 @@ class Mouse(models.Model):
         today = datetime.date.today()
         return (today - self.dob).days
     
+    @property
+    def still_in_breeding_cage(self):
+        """Returns true if still in the cage it was bred in"""
+        if self.litter:
+            return self.cage == self.litter.breeding_cage
+        else:
+            return False
+    
     def __str__(self):
         return str(self.name)
     
@@ -184,6 +201,13 @@ class Mouse(models.Model):
         #~ if self.litter and not self.pk:
             #~ self.manual_dob = self.litter.dob
         #~ return super(Mouse, self).save(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        # When creating pup in a litter nested inline, automatically place
+        # in the breeding cage
+        if self.litter and self.litter.breeding_cage and not self.pk:
+            self.cage = self.litter.breeding_cage
+        return super(Mouse, self).save(*args, **kwargs)
 
 class Litter(models.Model):
     date_mated = models.DateField('parents mated', null=True, blank=True)

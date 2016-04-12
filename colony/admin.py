@@ -8,7 +8,7 @@ import nested_inline.admin
 class MouseInline(nested_inline.admin.NestedTabularInline):
     model = Mouse
     extra = 1
-    exclude = ('manual_dob', 'manual_mother', 'manual_father')
+    exclude = ('manual_dob', 'manual_mother', 'manual_father', 'cage', 'sack_date')
     show_change_link = True    
     
     # How can we make "notes" the right-most field?
@@ -43,7 +43,8 @@ class LitterAdmin(admin.ModelAdmin):
     ordering = ('proprietor',)
 
 class CageAdmin(nested_inline.admin.NestedModelAdmin):
-    list_display = ('name', 'proprietor', 'litter', 'infos', 'needs', 'need_date', 'defunct', 'notes',)
+    list_display = ('name', 'proprietor', 'litter', 'infos', 
+        'needs', 'need_date', 'defunct', 'notes',)
     list_editable = ('notes', 'defunct', )
     
     # This list_filter doesn't seem to be working at all
