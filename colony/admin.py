@@ -64,10 +64,10 @@ class MouseAdmin(admin.ModelAdmin):
     #search_fields = ['name']
     
     # This controls the columns that show up on the Admin page for Mouse
-    list_display = ('name', 'user', 'dob', 'age', 'sack_date', 'sex', 'cage', 
+    list_display = ('name', 'user', 'dob', 'age', 'sacked', 'sex', 'cage', 
         'breeder', 'genotype', 'litter', 'notes')
     list_editable = ('notes',)
-    readonly_fields = ('info', 'age', 'dob', 'mother', 'father', 'sack_date',)
+    readonly_fields = ('info', 'age', 'dob', 'mother', 'father', 'sacked',)
     #~ list_display_links = ('name', 'litter', 'cage')
     list_filter = ['genotype__name', 'breeder']
     

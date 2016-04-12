@@ -126,7 +126,7 @@ class Mouse(models.Model):
     
     @property
     def sacked(self):
-        return True
+        return self.sack_date is not None
     
     @property
     def dob(self):
