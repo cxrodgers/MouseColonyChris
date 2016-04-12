@@ -6,15 +6,19 @@ from django.db.models import Count
 import nested_inline.admin
 
 class MouseInline(nested_inline.admin.NestedTabularInline):
+    """Nested within Litter, so this is for adding pups"""
     model = Mouse
     extra = 1
+    
+    # Exclude the stuff that isn't normally specified when adding pups
     exclude = ('manual_dob', 'manual_mother', 'manual_father', 
-        'cage', 'sack_date', 'user')
+        'cage', 'sack_date', 'user', 'breeder')
     show_change_link = True    
     
     # How can we make "notes" the right-most field?
 
 class LitterInline(nested_inline.admin.NestedStackedInline):
+    """For adding a Litter to a Cage"""
     model = Litter
     extra = 0
     show_change_link = True
@@ -61,11 +65,11 @@ class MouseAdmin(admin.ModelAdmin):
     
     # This controls the columns that show up on the Admin page for Mouse
     list_display = ('name', 'user', 'dob', 'age', 'sack_date', 'sex', 'cage', 
-        'genotype', 'litter', 'notes')
-    list_editable = ('sack_date', )
-    readonly_fields = ('info', 'age', 'dob', 'mother', 'father')
+        'breeder', 'genotype', 'litter', 'notes')
+    list_editable = ('notes',)
+    readonly_fields = ('info', 'age', 'dob', 'mother', 'father', 'sack_date',)
     #~ list_display_links = ('name', 'litter', 'cage')
-    list_filter = ['genotype', 'sack_date']
+    list_filter = ['genotype__name', 'breeder']
     
     # This controls what you see on the individual mouse page
     # Would be better to break this up into sections
@@ -78,6 +82,12 @@ class MouseAdmin(admin.ModelAdmin):
         }),
     )
     #ordering = ['dob']
+
+    #~ # Was hoping to get filtering by sacked working, but doesn't seem to
+    #~ def get_queryset(self, request):
+        #~ qs = super(MouseAdmin, self).get_queryset(request)
+        #~ return qs.annotate(is_sacked=Count('sack_date'))
+    
 
 class GenotypeAdmin(admin.ModelAdmin):
     ordering = ('name',)

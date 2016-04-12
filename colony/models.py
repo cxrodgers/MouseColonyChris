@@ -120,8 +120,13 @@ class Mouse(models.Model):
     # Link it to a cage
     cage = models.ForeignKey(Cage, null=True, blank=True)
     
+    breeder = models.BooleanField(default=False)
     user = models.ForeignKey(Person, null=True, blank=True)
     genotype = models.ForeignKey(Genotype)
+    
+    @property
+    def sacked(self):
+        return True
     
     @property
     def dob(self):
