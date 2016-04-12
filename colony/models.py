@@ -119,6 +119,8 @@ class Mouse(models.Model):
     
     # Link it to a cage
     cage = models.ForeignKey(Cage, null=True, blank=True)
+    
+    user = models.ForeignKey(Person, null=True, blank=True)
     genotype = models.ForeignKey(Genotype)
     
     @property
@@ -158,23 +160,28 @@ class Mouse(models.Model):
             return None    
         
     def info(self):
-        """Returns TRAINING_NAME || NAME (SEX, AGE, GENOTYPE)
+        """Returns a verbose set of information about the mouse.
         
+        %NAME% (%SEX% %AGE% %GENOTYPE% %USER%)
         """
+        res = "%s (%s " % (self.name, self.get_sex_display())
+
+        # Add age if we know it
         age = self.age()
-        if age is None:
-            return "%s (%s %s)" % (
-                str(self.name),
-                str(self.genotype),
-                str(self.get_sex_display()),
-                )
-        else:
-            return "%s (P%d %s %s)" % (
-                str(self.name),
-                self.age(),
-                str(self.genotype),
-                str(self.get_sex_display()),
-                )
+        if age is not None:
+            res += 'P%d ' % age
+        
+        # Always add genotype
+        res += str(self.genotype)
+        
+        # Add user if we know it
+        if self.user:
+            res += ' [%s]' % str(self.user)
+        
+        # Finish
+        res += ')'
+        return res
+
     
     def age(self):
         if self.dob is None:

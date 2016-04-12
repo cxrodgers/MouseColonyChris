@@ -8,7 +8,8 @@ import nested_inline.admin
 class MouseInline(nested_inline.admin.NestedTabularInline):
     model = Mouse
     extra = 1
-    exclude = ('manual_dob', 'manual_mother', 'manual_father', 'cage', 'sack_date')
+    exclude = ('manual_dob', 'manual_mother', 'manual_father', 
+        'cage', 'sack_date', 'user')
     show_change_link = True    
     
     # How can we make "notes" the right-most field?
@@ -59,7 +60,7 @@ class MouseAdmin(admin.ModelAdmin):
     #search_fields = ['name']
     
     # This controls the columns that show up on the Admin page for Mouse
-    list_display = ('name', 'dob', 'age', 'sack_date', 'sex', 'cage', 
+    list_display = ('name', 'user', 'dob', 'age', 'sack_date', 'sex', 'cage', 
         'genotype', 'litter', 'notes')
     list_editable = ('sack_date', )
     readonly_fields = ('info', 'age', 'dob', 'mother', 'father')
