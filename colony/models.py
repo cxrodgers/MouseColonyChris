@@ -283,39 +283,58 @@ class Litter(models.Model):
         """Automatically determine next needed action and date.
         
         Sets the fields "cached_needs" and "cached_need_date".
+        
+        Here is the order of things to check:
+        2. No DOB: check for pups
+        3. Litter >P21 and no wean: wean immediately
+        4. Litter >P7 and no toe clip: toe clip immediately
+        5. Not toe clipped: toe clip in future
+        6. Not weaned: wean in future
         """
-        if self.date_weaned is not None:
-            # Already weaned
-            self.cached_needs = None
-            self.cached_need_date = None
-        elif self.date_toeclipped is not None:
-            # Already toe clipped, needs wean
-            if self.dob is None:
-                self.cached_needs = "provide dob"
-                self.cached_need_date = datetime.date.today()
-                return
-            self.cached_need_date = self.dob + datetime.timedelta(days=19)
-            self.cached_needs = "wean"
-        elif self.dob is not None:
-            # Born, but not toe clipped
-            self.cached_need_date = self.dob + datetime.timedelta(days=7)
-            self.cached_needs = "toe clip"
-        elif self.date_mated is not None:
-            # Not born yet
-            self.cached_need_date = self.date_mated + datetime.timedelta(days=25)
+        # By default, nothing needed
+        self.cached_needs = None
+        self.cached_need_date = None
+        
+        if not self.dob:
+            # Not born yet, need to check for pups
+            self.cached_need_date = self.date_mated + \
+                datetime.timedelta(days=25)
             
             # If it was checked since the target date, extend by 4 days
-            if self.date_checked is not None and self.date_checked > self.cached_need_date:
-                self.cached_need_date = self.date_checked + datetime.timedelta(days=4)
+            if (self.date_checked is not None and 
+                self.date_checked > self.cached_need_date):
+                self.cached_need_date = self.date_checked + \
+                    datetime.timedelta(days=4)
             
             # Recalculate the time taken
             gestation_period = (self.cached_need_date - self.date_mated).days
-            self.cached_needs = "pup check day %d" % gestation_period
-        else:
-            # Not even mated
-            self.cached_needs = None
-            self.cached_need_date = datetime.date.today()
-            
+            self.cached_needs = "pup check" # day %d" % gestation_period            
+            return
+        
+        if self.age() >= 21 and not self.date_weaned:
+            # Needs wean immediately
+            self.cached_need_date = self.dob + datetime.timedelta(days=21)
+            self.cached_needs = "wean"
+            return
+        
+        if self.age() >= 7 and not self.date_toeclipped:
+            # Needs toe clip immediately
+            self.cached_need_date = self.dob + datetime.timedelta(days=7)
+            self.cached_needs = "toe clip"
+            return        
+        
+        if not self.date_toeclipped:
+            # Needs toe clip in the future
+            self.cached_need_date = self.dob + datetime.timedelta(days=7)
+            self.cached_needs = "toe clip"
+            return
+        
+        if not self.date_weaned:
+            # Needs wean in the future
+            self.cached_need_date = self.dob + datetime.timedelta(days=21)
+            self.cached_needs = "wean"          
+            return
+
     def save(self, *args, **kwargs):
         if self.breeding_cage and not self.pk:
             self.proprietor = self.breeding_cage.proprietor
