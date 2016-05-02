@@ -50,7 +50,7 @@ class LitterAdmin(admin.ModelAdmin):
 class CageAdmin(nested_inline.admin.NestedModelAdmin):
     list_display = ('name', 'proprietor', 'litter', 'infos', 
         'needs', 'need_date', 'defunct', 'notes',)
-    list_editable = ('notes', 'defunct', )
+    list_editable = ('notes', )
     
     # This list_filter doesn't seem to be working at all
     list_filter = ('proprietor__name')
