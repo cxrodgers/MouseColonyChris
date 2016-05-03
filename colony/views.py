@@ -11,6 +11,9 @@ class IndexView(generic.ListView):
     def get_queryset(self):
         return Cage.objects.order_by('defunct').all()
 
+def cages(request):
+    return render(request, 'colony/cages.html', {'cages': Cage.objects.all()})
+
 #~ class MouseDetailView(generic.ListView):
     #~ model = Mouse
     #~ template_name = 'colony/mouse_detail.html'
