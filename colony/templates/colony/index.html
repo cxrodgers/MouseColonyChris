@@ -1,56 +1,79 @@
-{% if object_list %}
+{# specifies the overall style #}
+<style type="text/css">
+tr
+{
+    font-family: Sans;
+    font-size: 10;
+}
+td
+{
+    padding:2px 8px 2px 8px; {# space between rows and columns #}
+    font-family: Sans;
+    font-size: 10;
+}
+</style>
+
+{# big table of cages #}
+<table border="0" style="text-align: center; border-collapse: collapse">
+    {# header row #}
+    <tr>
+        <th>cage</th>
+        <th>prop.</th>
+        <th>mouse</th>
+        <th>sex</th>
+        <th>genotype</th>
+        <th>DOB</th>
+        <th>age</th>
+        <th>needs</th>
+        <th>notes</th>
+    </tr>
+    
+    {# iterate over every cage #}
     {% for cage in object_list %}
-        <h2>{{ cage.name }} {% if cage.defunct %} (defunct) {% endif %}</h2>
-        
-        {% if cage.purpose %}
-            Purpose: {{cage.purpose}}<br />
-        {% endif %}
-        
-        Target genotype: {{cage.target_genotype}}<br />
-
-        {% if cage.father %}
-            Father: {{cage.father.info}}<br />
-        {% endif %}
-
-        {% if cage.mother %}
-            Mother: {{cage.mother.info}}<br />
-        {% endif %}
-
-        {% if cage.mother2 %}
-            Mother2: {{cage.mother2.info}}<br />
-        {% endif %}
-
-        <br />
-        {% if cage.status %}
-            <strong>Status: {{cage.status}}</strong><br />
-        {% endif %}
-
-        <br />
-        Mouse list:<br />
-
-        {% if cage.mouse_set.all %}
-            <ul>
+        {% if not cage.defunct %}
+            {# display some error text if the cage is empty #}
+            {% if not cage.mouse_set.all %}
+                <td> {{ cage.name }} </td>
+                <td>{{ cage.proprietor }} </td>
+                <td>EMPTY</td>
+            {% endif %}
+            
+            {# loop over mice in the cage, with a border above the first one #}
             {% for mouse in cage.mouse_set.all %}
-                <li>{{ mouse.info }}</li>
-            {% endfor %}
-            </ul>
-        {% else %}
-            Cage is empty.
-        {% endif %}
-        
-        <br />
-        Litter list:<br />        
-        
-        {% if cage.litter_set.all %}
-            <ul>
-            {% for litter in cage.litter_set.all %}
-                <li>{{ litter.name }} -- {{ litter.dob }} -- <strong>{{ litter.status }}</strong></li>
-            {% endfor %}
-            </ul>
-        {% endif %}
-        
-    {% endfor %}
+            <tr {% if forloop.counter0 == 0%} style="border-top: thin solid" {% endif %}>
+                {# only print name and proprietor for first one #}
+                <td> {% if forloop.counter0 == 0 %} {{ cage.name }} {% endif %} </td>
+                <td> {% if forloop.counter0 == 0 %} {{ cage.proprietor }} {% endif %} </td>
 
-{% else %}
-    <p>No cages are available.</p>
-{% endif %}
+                {# print pup in front of mouse name #}
+                {% if mouse.litter.breeding_cage == cage %}
+                    <td> pup {{ mouse.name }} </td>
+                {% else %}
+                    <td>{{ mouse.name }}</td>
+                {% endif %}
+                
+                {# print sex, genotype, dob #}
+                <td>{{ mouse.get_sex_display }}</td>
+                <td>{{ mouse.genotype }}</td>
+                <td>{{ mouse.dob|date:"Y-m-d" }}</td>
+                <td>{% if mouse.age %} {{ mouse.age }} {% endif %}</td>
+                
+                {# print needs for first mouse in cage #}
+                {% if forloop.counter0 == 0 and cage.needs %}
+                    <td>{{ cage.needs }} on {{ cage.need_date|date:"m-d" }}</td>
+                {% else %}
+                    <td />
+                {% endif %}
+                
+                {# print notes for first mouse in cage #}
+                {% if forloop.counter0 == 0 %}
+                    <td>{{ cage.notes }}</td>
+                {% else %}
+                    <td />
+                {% endif %}                
+            </tr>
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+</table>
+    
