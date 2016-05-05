@@ -60,6 +60,23 @@ class CageAdmin(nested_inline.admin.NestedModelAdmin):
     list_filter = ('proprietor',)
     inlines = [LitterInline]
 
+class SackFilter(admin.SimpleListFilter):
+    title = _('Sacked')
+    parameter_name = 'sac date'
+    
+    def lookups(self, request, model_admin):
+            return(
+                ('yes', _('yes')),
+                ('no', _('no')),
+            )
+        
+    def queryset(self, request, queryset):
+        if self.value() == 'yes':
+            return queryset.filter(sackDate__isnull=False)
+        
+        if self.value() == 'no':
+            return queryset.filter(sackDate__isnull=True)
+
 class MouseAdmin(admin.ModelAdmin):
     #search_fields = ['name']
     
@@ -69,7 +86,7 @@ class MouseAdmin(admin.ModelAdmin):
     list_editable = ('notes',)
     readonly_fields = ('info', 'age', 'dob', 'mother', 'father', 'sacked',)
     #~ list_display_links = ('name', 'litter', 'cage')
-    list_filter = ['genotype__name', 'breeder']
+    list_filter = ['genotype__name', 'breeder', SackFilter]
     
     # This controls what you see on the individual mouse page
     # Would be better to break this up into sections
