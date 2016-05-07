@@ -45,9 +45,13 @@ td
                 <td> {% if forloop.counter0 == 0 %} {{ cage.name }} {% endif %} </td>
                 <td> {% if forloop.counter0 == 0 %} {{ cage.proprietor }} {% endif %} </td>
 
-                {# print pup in front of mouse name #}
-                {% if mouse.litter.breeding_cage == cage %}
-                    <td> pup {{ mouse.name }} </td>
+                {# Colorize the mouse name for breeding mothers and fathers #}
+                {% if mouse.can_be_breeding_mother %}
+                    <td><font color='red'>{{ mouse.name }}</font></td>
+                {% elif mouse.can_be_breeding_father %}
+                    <td><font color='blue'>{{ mouse.name }}</font></td>
+                {% elif mouse.still_in_breeding_cage %}
+                    <td>{{ mouse.name }}</td>
                 {% else %}
                     <td>{{ mouse.name }}</td>
                 {% endif %}

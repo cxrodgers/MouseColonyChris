@@ -202,6 +202,51 @@ class Mouse(models.Model):
         else:
             return False
     
+    @property 
+    def is_breedable_female(self):
+        """Returns True if this mouse is female and age is >40 or unknown"""
+        my_age = self.age()
+        return self.get_sex_display() == 'F' and (my_age is None or my_age > 40)
+
+    @property 
+    def is_breedable_male(self):
+        """Returns True if this mouse is male and age is >40 or unknown"""
+        my_age = self.age()
+        return self.get_sex_display() == 'M' and (my_age is None or my_age > 40)
+
+    @property
+    def can_be_breeding_mother(self):
+        """Returns True if this mouse could be a breeding mother in this cage.
+        
+        Specifically, returns True if the mouse is_breedable_female and there
+        is another mouse in the same cage that is_breedable_male.
+        
+        This is useful for highlighting mice that are (probably) breeding in
+        the CensusView. It eventually could be used to auto-generate the
+        "date parents mated" field on litters.
+        
+        Note that this is distinct from the "breeder" property, which is set
+        manually by the user rather than inferred from the "facts on
+        the ground".
+        """
+        if self.is_breedable_female:
+            for mouse in self.cage.mouse_set.all():
+                if mouse.is_breedable_male:
+                    return True
+        return False
+
+    @property
+    def can_be_breeding_father(self):
+        """Returns True if this mouse could be a breeding father in this cage.
+        
+        See doc for can_be_breeding_mother
+        """
+        if self.is_breedable_male:
+            for mouse in self.cage.mouse_set.all():
+                if mouse.is_breedable_female:
+                    return True
+        return False
+    
     def __str__(self):
         return str(self.name)
     
