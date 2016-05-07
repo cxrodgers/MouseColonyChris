@@ -99,11 +99,32 @@ class Genotype(models.Model):
         return self.name
 
 class Mouse(models.Model):
-    name = models.CharField(max_length=15, unique=True)
-    litter = models.ForeignKey('Litter', null=True, blank=True)
+    """Model for a Mouse.
     
-    sack_date = models.DateField('sac date', blank=True, null=True)
-    notes = models.CharField(max_length=100, null=True, blank=True)    
+    Required fields
+        name: unique. Should almost always be LITTERNUM-TOENUM
+        sex: M, F, or ?
+        genotype: foreign key to genotype
+    
+    Optional fields that are often set
+        cage: cage object in which this mouse is physically located
+        sack_date: date of death
+        breeder: boolean, used mainly for filtering in MouseList to see
+            whether we have enough breeders
+
+    When mice are born and added to the tabular inline for the breeding
+    cage, a Litter object is created and set to be the "litter" attribute
+    on this mouse.
+
+    "Override" fields. Typically these data are calculated by traversing
+    to the mouse's Litter. Some mice were grandfathered into the db or
+    were purchased and so no Litter object is available.
+        manual_dob : date of birth
+        manual_father
+        manual_mother
+    """
+    # Required fields
+    name = models.CharField(max_length=15, unique=True)
     sex = models.IntegerField(
         choices=(
             (0, 'M'),
@@ -111,18 +132,24 @@ class Mouse(models.Model):
             (2, '?'),
             )
         )
+    genotype = models.ForeignKey(Genotype)
+    
+    # Optional fields that can be set by the user
+    cage = models.ForeignKey(Cage, null=True, blank=True)
+    sack_date = models.DateField('sac date', blank=True, null=True)
+    breeder = models.BooleanField(default=False)
+    user = models.ForeignKey(Person, null=True, blank=True)    
+    notes = models.CharField(max_length=100, null=True, blank=True)    
     
     # These fields are normally calculated from Litter but can be overridden
     manual_dob = models.DateField('DOB override', blank=True, null=True)
-    manual_father = models.ForeignKey('Mouse', null=True, blank=True, related_name='mmf')
-    manual_mother = models.ForeignKey('Mouse', null=True, blank=True, related_name='mmm')
-    
-    # Link it to a cage
-    cage = models.ForeignKey(Cage, null=True, blank=True)
-    
-    breeder = models.BooleanField(default=False)
-    user = models.ForeignKey(Person, null=True, blank=True)
-    genotype = models.ForeignKey(Genotype)
+    manual_father = models.ForeignKey('Mouse', 
+        null=True, blank=True, related_name='mmf')
+    manual_mother = models.ForeignKey('Mouse', 
+        null=True, blank=True, related_name='mmm')
+
+    # This field is almost always set at the time of creation of a new Litter
+    litter = models.ForeignKey('Litter', null=True, blank=True)
     
     @property
     def sacked(self):

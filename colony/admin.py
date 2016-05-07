@@ -90,14 +90,14 @@ class MouseAdmin(admin.ModelAdmin):
     
     # This controls what you see on the individual mouse page
     # Would be better to break this up into sections
-    fieldsets = (
-        (None, {
-            'fields': ('name', 'dob', 'father', 'mother', 
-            'manual_dob', 'manual_father', 'manual_mother',
-            'age', 'sack_date', 'sex', 'cage', 'genotype', 'litter', 'notes', 'info'),
-            'description': 'Specify manual_dob, manual_father, and manual_mother only if not available in litter info',
-        }),
-    )
+    #~ fieldsets = (
+        #~ (None, {
+            #~ 'fields': ('name', 'dob', 'father', 'mother', 
+            #~ 'manual_dob', 'manual_father', 'manual_mother',
+            #~ 'age', 'sack_date', 'sex', 'cage', 'genotype', 'litter', 'notes', 'info'),
+            #~ 'description': 'Specify manual_dob, manual_father, and manual_mother only if not available in litter info',
+        #~ }),
+    #~ )
     #ordering = ['dob']
 
     #~ # Was hoping to get filtering by sacked working, but doesn't seem to
