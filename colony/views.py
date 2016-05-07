@@ -6,13 +6,18 @@ from .models import  Mouse, Cage
 # Create your views here.
 
 class IndexView(generic.ListView):
+    """Returns all cages sorted by name for the CensusView to display"""
     template_name = 'colony/index.html'
     model = Cage
     def get_queryset(self):
-        return Cage.objects.order_by('defunct').all()
+        return Cage.objects.order_by('name').all()
 
 def cages(request):
-    return render(request, 'colony/cages.html', {'cages': Cage.objects.all()})
+    """Return view of cages for django_tables2
+    
+    This has basically been replaced by the IndexView above.
+    """
+    return render(request, 'colony/cages.html', {'cages': Cage.objects.order_by('-name').all()})
 
 #~ class MouseDetailView(generic.ListView):
     #~ model = Mouse
