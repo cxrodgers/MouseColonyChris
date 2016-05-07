@@ -294,28 +294,26 @@ class Mouse(models.Model):
         return super(Mouse, self).save(*args, **kwargs)
 
 class Litter(models.Model):
-    date_mated = models.DateField('parents mated', null=True, blank=True)
-    dob = models.DateField('date of birth', null=True, blank=True)
-    date_toeclipped = models.DateField('toe clip', null=True, blank=True)
-    date_weaned = models.DateField('weaned', null=True, blank=True)
-    date_checked = models.DateField('last checked', null=True, blank=True)
+    """Model for Litter.
     
-    proprietor = models.ForeignKey(Person, default=1)
+    A Litter is a set of Mice that were born in a Cage. Each Cage should
+    only ever have one Litter.
     
-    notes = models.CharField(max_length=100, null=True, blank=True)
-    pcr_info = models.CharField(max_length=50, null=True, blank=True)
-
-    # These will be set upon request for properties needs and need_date
-    cached_needs = None
-    cached_need_date = None
-
-    father = models.ForeignKey('Mouse',
-        null=True, blank=True, related_name='bc_father',
-        limit_choices_to={'sex': 0})
-    mother = models.ForeignKey('Mouse',
-        null=True, blank=True, related_name='bc_mother',
-        limit_choices_to={'sex': 1})
+    Required fields:
+        proprietor (Is this really necessary since we have Cage proprietor?)
+        breeding_cage : OneToOne
+        father
+        mother
     
+    Optional fields:
+        date_mated
+        dob
+        date_toeclipped
+        date_weaned
+        date_checked
+        notes
+        pcr_info
+    """
     # A one-to-one key to Cage, because each Cage can have no more than
     # one litter
     # Not sure whether to set primary_key=True here
@@ -324,7 +322,33 @@ class Litter(models.Model):
     # new Cage, which may save a manual step?
     breeding_cage = models.OneToOneField(Cage,
         on_delete=models.CASCADE,
-        primary_key=True)
+        primary_key=True)    
+    
+    # Required field
+    proprietor = models.ForeignKey(Person, default=1)
+
+    # ForeignKey to father and mother of Litter
+    father = models.ForeignKey('Mouse',
+        related_name='bc_father',
+        limit_choices_to={'sex': 0})
+    mother = models.ForeignKey('Mouse',
+        related_name='bc_mother',
+        limit_choices_to={'sex': 1})
+
+    # Optional fields relating to dates
+    date_mated = models.DateField('parents mated', null=True, blank=True)
+    dob = models.DateField('date of birth', null=True, blank=True)
+    date_toeclipped = models.DateField('toe clip', null=True, blank=True)
+    date_weaned = models.DateField('weaned', null=True, blank=True)
+    date_checked = models.DateField('last checked', null=True, blank=True)
+    
+    # Other optional fields
+    notes = models.CharField(max_length=100, null=True, blank=True)
+    pcr_info = models.CharField(max_length=50, null=True, blank=True)
+
+    # These will be set upon request for properties needs and need_date
+    cached_needs = None
+    cached_need_date = None
     
     def days_since_mating(self):
         if self.date_mated is None:
