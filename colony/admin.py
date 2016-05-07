@@ -61,21 +61,21 @@ class CageAdmin(nested_inline.admin.NestedModelAdmin):
     inlines = [LitterInline]
 
 class SackFilter(admin.SimpleListFilter):
-    title = _('Sacked')
+    title = 'Sacked'
     parameter_name = 'sac date'
     
     def lookups(self, request, model_admin):
             return(
-                ('yes', _('yes')),
-                ('no', _('no')),
+                ('yes', 'yes'),
+                ('no', 'no'),
             )
         
     def queryset(self, request, queryset):
         if self.value() == 'yes':
-            return queryset.filter(sackDate__isnull=False)
+            return queryset.filter(sack_date__isnull=False)
         
         if self.value() == 'no':
-            return queryset.filter(sackDate__isnull=True)
+            return queryset.filter(sack_date__isnull=True)
 
 class MouseAdmin(admin.ModelAdmin):
     #search_fields = ['name']
