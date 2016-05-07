@@ -30,7 +30,7 @@ class LitterAdmin(admin.ModelAdmin):
         'date_checked',  'needs', 'need_date', 'notes',)
     inlines = [MouseInline] 
     list_editable = ('notes', 'date_checked')
-    list_filter = ('proprietor',)
+    list_filter = ('proprietor__name',)
     readonly_fields = ('needs', 'need_date')
 
     def get_queryset(self, request):
@@ -53,11 +53,10 @@ class CageAdmin(nested_inline.admin.NestedModelAdmin):
     list_editable = ('notes', )
     
     # This list_filter doesn't seem to be working at all
-    list_filter = ('proprietor__name')
+    list_filter = ('proprietor__name', 'defunct',)
     
     ordering = ('defunct', 'proprietor', 'name',)
     readonly_fields = ('infos', 'needs', 'need_date',)
-    list_filter = ('proprietor',)
     inlines = [LitterInline]
 
 class SackFilter(admin.SimpleListFilter):
