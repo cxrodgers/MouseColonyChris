@@ -47,13 +47,55 @@ class LitterAdmin(admin.ModelAdmin):
             
     ordering = ('proprietor',)
 
+class DefunctFilter(admin.SimpleListFilter):
+    """By default, filter by defunct=False
+    
+    https://www.elements.nl/2015/03/16/getting-the-most-out-of-django-admin-filters/
+    """
+    title = 'whether the cage is defunct'
+    parameter_name = 'defunct'
+    
+    def lookups(self, request, model_admin):
+        """Map the choice strings in the URL to human-readable text
+        
+        Note that an "All" choice is always presented, but we're breaking
+        it, so we need no provide an "Actually All".
+        """
+        return (
+            ('no', 'Active'),
+            ('yes', 'Defunct'),
+            ('all', 'Actually All'),
+        )
+    
+    def queryset(self, request, queryset):
+        """Filter by the selected self.value()"""
+        filter_value = self.value()
+        if filter_value == 'no':
+            return queryset.filter(defunct=False)
+        elif filter_value == 'yes':
+            return queryset.filter(defunct=True)
+        elif filter_value == 'all':
+            return queryset
+        else:
+            raise ValueError("unexpected value %s" % filter_value)
+    
+    def value(self):
+        """Override value() to be 'no' by default
+        
+        Bug here because selecting the hardwired "All" option will still
+        choose 'no'.
+        """
+        value = super(DefunctFilter, self).value()
+        if value is None:
+            value = 'no'
+        return value
+
 class CageAdmin(nested_inline.admin.NestedModelAdmin):
     list_display = ('name', 'proprietor', 'litter', 'infos', 
         'needs', 'need_date', 'defunct', 'notes',)
     list_editable = ('notes', )
     
-    # This list_filter doesn't seem to be working at all
-    list_filter = ('proprietor__name', 'defunct',)
+    list_filter = ('proprietor__name', DefunctFilter,)
     
     ordering = ('defunct', 'proprietor', 'name',)
     readonly_fields = ('infos', 'needs', 'need_date',)
