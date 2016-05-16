@@ -141,6 +141,10 @@ class Mouse(models.Model):
     user = models.ForeignKey(Person, null=True, blank=True)    
     notes = models.CharField(max_length=100, null=True, blank=True)    
     
+    # Chris-specific optional fields
+    training_name = models.CharField(max_length=20, null=True, blank=True)
+    headplate_color = models.CharField(max_length=10, null=True, blank=True)
+    
     # These fields are normally calculated from Litter but can be overridden
     manual_dob = models.DateField('DOB override', blank=True, null=True)
     manual_father = models.ForeignKey('Mouse', 
