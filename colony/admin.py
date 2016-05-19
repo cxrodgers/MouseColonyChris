@@ -16,7 +16,8 @@ class ChrisCageAdmin(nested_inline.admin.NestedModelAdmin):
 
 class ChrisMouseAdmin(admin.ModelAdmin):
     # This controls the columns that show up on the Admin page for Mouse
-    list_display = ('name', 'sex', 'cage', 'genotype',)# 'litter', 'notes')
+    list_display = ('name', 'training_name', 'headplate_color', 
+        'dob', 'sex', 'cage', 'genotype', )# 'litter', 'notes')
     #~ list_editable = ('notes',)
     #~ readonly_fields = ('info', 'age', 'dob', 'mother', 'father', 'sacked',)
     #~ list_display_links = ('name', 'litter', 'cage')

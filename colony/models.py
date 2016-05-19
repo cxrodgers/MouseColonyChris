@@ -41,6 +41,7 @@ class ChrisMouse(models.Model):
     
     # Optional fields that can be set by the user
     cage = models.ForeignKey(ChrisCage, null=True, blank=True)
+    dob = models.DateField(blank=True, null=True)
     
     # Chris-specific optional fields
     training_name = models.CharField(max_length=20, null=True, blank=True)
