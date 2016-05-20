@@ -6,13 +6,14 @@ import colony.models
 import os
 
 # Which mouse to get and what info to assign
-target_mouse_name = 'CR27-1'
-headplate_color = 'GB'
-training_name = 'KM86'
+target_mouse_name = 'CR28-4'
+headplate_color = ''
+training_name = ''
 
 # Connect to the master database
 # Should be a way to get this using the django ORM and specifying which one
 database_path = os.path.expanduser('~/mnt/django/MouseColony/db.sqlite3')
+database_path = os.path.expanduser('~/mnt/nas2_cifs/django_public/db.sqlite3')
 if not os.path.exists(database_path):
     raise IOError("cannot find database: %s" % database_path)
 conn = sqlalchemy.create_engine('sqlite:///%s' % database_path)
