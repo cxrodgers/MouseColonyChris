@@ -2,10 +2,10 @@ from django.contrib import admin
 from .models import (ChrisMouse, ChrisGenotype, ChrisCage,)
 # Register your models here.
 from django.db.models import Count
-import nested_inline.admin
+#import nested_inline.admin
 
 
-class ChrisCageAdmin(nested_inline.admin.NestedModelAdmin):
+class ChrisCageAdmin(admin.ModelAdmin):
     list_display = ('name',)# 'infos',)
     #~ list_editable = ('notes', )
     
